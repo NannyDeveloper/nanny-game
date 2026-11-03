@@ -329,7 +329,33 @@ function labelOf0(k){
 }
 function doAct(){
   if(!playing||tr)return;
-  if(hidden>=0){var e=HIDES[hidden].e;pos={x:e[0],z:e[1]};hidden=-1;$('hid').classList.add('hidden');hudUp();return}
+  if(hidden>=0){
+    var e=HIDES[hidden].e;
+    var bestX = e[0], bestZ = e[1];
+    
+    // Проверяем, не застрянем ли мы в мебели/стене
+    if (hit(bestX, bestZ)) {
+      var found = false;
+      for (var r = 0.6; r <= 2.4; r += 0.6) {
+        for (var a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+          var tx = e[0] + Math.cos(a) * r;
+          var tz = e[1] + Math.sin(a) * r;
+          if (!hit(tx, tz)) {
+            bestX = tx; bestZ = tz;
+            found = true;
+            break;
+          }
+        }
+        if (found) break;
+      }
+    }
+    
+    pos = {x: bestX, z: bestZ};
+    hidden = -1;
+    $('hid').classList.add('hidden');
+    hudUp();
+    return;
+  }
   var k=actK;if(!k)return;
   if(k.t==='key'||k.t==='rat'||k.t==='cab'){
     sc.remove(k.m);ITEMS.splice(ITEMS.indexOf(k),1);burst(.1,900,.3,'bandpass');
