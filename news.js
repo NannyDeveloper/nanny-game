@@ -5,7 +5,7 @@
 // Английский текст можно не писать: тогда будет показан русский.
 // Если в тексте есть апостроф ', поставь перед ним обратную косую: \'
 window.NANNY_NEWS=[
-  {date:'03.11.26', ru: 'Версия 1.5! Изменение скина няни.', en:'Version 1.5! Nanny skin has been remade.'),
+  {date:'03.11.26', ru: 'Версия 1.5! Изменение скина няни.', en: 'Version 1.5! Nanny skin has been remade.'),
   {date:'03.11.26', ru: 'Версия 1.4.1! Исправлены ошибки.', en: 'Version 1.4.1! Fixed bugs.'},
   {date:'03.11.26', ru: 'Версия 1.4! Добавление раздела «новости»', en:'Version 1.4! Added a «News» page.'},
   {date:'02.11.26', ru:'Версия 1.3! Добавление анимации после побега + добавление Английского языка.', en:'Version 1.3! Added an escape animation + added English language.'},
