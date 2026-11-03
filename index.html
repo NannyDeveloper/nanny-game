@@ -47,6 +47,25 @@ details ul{margin-top:8px}
 .nd{color:var(--warm);font:700 13px 'Courier New',monospace;white-space:nowrap}
 .nt{font-size:14px;line-height:1.45}
 .nt.empty{grid-column:1/3;color:var(--dim)}
+.yt-banner {
+  display: block;
+  width: 100%;
+  max-width: 440px;
+  margin: 10px auto 0;
+  transition: transform 0.2s, filter 0.2s;
+}
+.yt-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Если у PNG есть белая обводка или фон, и вы хотите её скрыть, 
+     можно добавить mix-blend-mode: screen; или lighten, 
+     но обычно для таких баннеров это не нужно. */
+}
+.yt-banner:hover {
+  transform: scale(1.02);
+  filter: brightness(1.15); /* Легкая подсветка при наведении */
+}
 </style>
 </head>
 <body>
@@ -88,6 +107,11 @@ details ul{margin-top:8px}
     <button class="sm" id="fs">На весь экран</button>
     <button class="sm" id="rs">Сбросить концовки</button>
   </div>
+
+  <a href="https://www.youtube.com/@NannyDeveloper" target="_blank" class="yt-banner">
+    <img src="yt-ru.PNG" id="yt-img" alt="YouTube">
+  </a>
+  
   <p class="foot">Nanny • made by Stepan Kovalenko and AI instruments </p>
 </main>
 <script src="news.js"></script>
@@ -127,7 +151,8 @@ function renderNews(){
   });
 }
 function apply(){
-  document.documentElement.lang=LANG;document.title=L('Нянька');walk();renderNews();draw();if(typeof rsBtn!=="undefined"&&!rsBtn.getAttribute("data-arm"))rsBtn.textContent=rsLabel("a");
+  document.documentElement.lang=LANG;document.title=L('Нянька');walk();renderNews();draw();var ytImg=document.getElementById('yt-img');
+  if(ytImg)ytImg.src=(LANG==='en')?'yt-en.PNG':'yt-ru.PNG'; if(typeof rsBtn!=="undefined"&&!rsBtn.getAttribute("data-arm"))rsBtn.textContent=rsLabel("a");
   Array.prototype.forEach.call(document.querySelectorAll('.lang .sm'),function(b){b.classList.toggle('on',b.getAttribute('data-l')===LANG)});
 }
 Array.prototype.forEach.call(document.querySelectorAll('.lang .sm'),function(b){
