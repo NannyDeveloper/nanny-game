@@ -207,15 +207,25 @@ var HIDES=[
 /* няня */
 function part(geo,c,x,y,z,e){var m=new THREE.Mesh(geo,M(c,e));m.position.set(x,y,z);return m}
 function buildNanny(){var g=new THREE.Group();
-g.add(part(new THREE.CylinderGeometry(.22,.55,1.2,10),0x2c2c3c,0,.6,0));
-g.add(part(new THREE.CylinderGeometry(.25,.25,.7,10),0x2c2c3c,0,1.4,0));
-g.add(part(new THREE.BoxGeometry(.42,.7,.05),0x7a0f0f,0,1.2,.25));
-g.add(part(new THREE.SphereGeometry(.2,12,10),0xc9c0b4,0,1.9,0));
-g.add(part(new THREE.SphereGeometry(.22,10,8),0xdddddd,0,2.0,-.05));
-g.add(part(new THREE.BoxGeometry(.06,.06,.02),0xffffff,-.07,1.92,.18,0xffffff));
-g.add(part(new THREE.BoxGeometry(.06,.06,.02),0xffffff,.07,1.92,.18,0xffffff));
-g.add(part(new THREE.BoxGeometry(.1,.1,.7),0xc9c0b4,-.3,1.5,.4));
-g.add(part(new THREE.BoxGeometry(.1,.1,.7),0xc9c0b4,.3,1.5,.4));
+// 1. Юбка/низ платья (темная, почти черная)
+g.add(part(new THREE.CylinderGeometry(.2,.65,1.4,10),0x151515,0,.7,0)); 
+// 2. Туловище (вытянутое)
+g.add(part(new THREE.CylinderGeometry(.22,.22,.8,10),0x151515,0,1.6,0));
+// 3. Кровавый фартук
+g.add(part(new THREE.BoxGeometry(.44,.8,.05),0x8a0000,0,1.4,.23));
+// 4. Голова (чуть меньше, кожа бледнее)
+g.add(part(new THREE.SphereGeometry(.18,12,10),0xe8dfd5,0,2.1,0));
+// 5. Пучок волос сзади
+g.add(part(new THREE.SphereGeometry(.2,10,8),0x050505,0,2.2,-.05));
+// 6. Растрепанные пряди по бокам
+g.add(part(new THREE.SphereGeometry(.12,10,8),0x050505,-.12,2.05,-.05));
+g.add(part(new THREE.SphereGeometry(.12,10,8),0x050505,.12,2.05,-.05));
+// 7 и 8. Красные глаза (в коде финала игры они увеличиваются)
+g.add(part(new THREE.BoxGeometry(.07,.07,.02),0xff0000,-.06,2.1,.16,0xff0000));
+g.add(part(new THREE.BoxGeometry(.07,.07,.02),0xff0000,.06,2.1,.16,0xff0000));
+// 9 и 10. Длинные руки, тянущиеся вперед
+g.add(part(new THREE.BoxGeometry(.1,.1,.9),0xe8dfd5,-.28,1.6,.45));
+g.add(part(new THREE.BoxGeometry(.1,.1,.9),0xe8dfd5,.28,1.6,.45));
 return g}
 var nm=buildNanny();sc.add(nm);
 
