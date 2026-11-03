@@ -214,14 +214,14 @@ var s2 = shuffle([...SAFE_SPOTS_F2]);
 
 // Раскидываем предметы по случайным местам
 var ITEMS=[
-  {t:'key', x:s1[0].x, z:s1[0].z, n:0, f:0}
-  {t:'cab', x:s1[1].x, z:s1[1].z, f:0}     
-  {t:'rat', x:s1[2].x, z:s1[2].z, f:0}     
-  {t:'rat', x:s1[3].x, z:s1[3].z, f:0}     
+  {t:'key', x:s1[0].x, z:s1[0].z, n:0, f:0},
+  {t:'cab', x:s1[1].x, z:s1[1].z, f:0},    
+  {t:'rat', x:s1[2].x, z:s1[2].z, f:0},     
+  {t:'rat', x:s1[3].x, z:s1[3].z, f:0},    
   
-  {t:'key', x:s2[0].x, z:s2[0].z, n:1, f:1} 
-  {t:'key', x:s2[1].x, z:s2[1].z, n:2, f:1} 
-  {t:'rat', x:s2[2].x, z:s2[2].z, f:1}       
+  {t:'key', x:s2[0].x, z:s2[0].z, n:1, f:1},
+  {t:'key', x:s2[1].x, z:s2[1].z, n:2, f:1},
+  {t:'rat', x:s2[2].x, z:s2[2].z, f:1}      
 ];
 ITEMS.forEach(function(it){
   var c=it.t==='key'?[0xffd54a,0x806000]:it.t==='cab'?[0xcfd8dc,0x303a40]:[0x6fb1ff,0x1a3a66];
