@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Нянька</title>
+<style>
+#rotate-warning {
+    display: none; 
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #000000;
+    z-index: 99999;
+    justify-content: center;
+    align-items: center;
+}
+.warning-text {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #dddddd;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    max-width: 400px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+@media (orientation: portrait) {
+    #rotate-warning { display: flex; }
+}
+:root{--bg:#020203;--ink:#ece6e0;--dim:#a89a90;--red:#b3201a;--warm:#ffb347;--panel:rgba(10,8,8,.72);color-scheme:dark}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;overflow:hidden;overscroll-behavior:none;user-select:none;-webkit-user-select:none}
+#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#vig{position:fixed;inset:0;pointer-events:none}
+.hidden{display:none!important}
+#hud{position:fixed;inset:0;pointer-events:none}
+button{font:inherit;color:inherit;cursor:pointer;pointer-events:auto}
+button:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+#stat{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:12px;font:600 13px/1.4 'Courier New',monospace;background:var(--panel);padding:5px 9px;border-radius:8px}
+#nz{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;font:700 13px 'Courier New',monospace;background:var(--panel);padding:5px 9px;border-radius:8px}
+#msg{position:fixed;top:calc(env(safe-area-inset-top,0px) + 60px);left:50%;transform:translateX(-50%);width:min(92%,480px);text-align:center;font-size:14px;line-height:1.4;background:var(--panel);padding:8px 12px;border-radius:10px;opacity:0;transition:opacity .4s}
+#joy{position:fixed;left:24px;bottom:calc(env(safe-area-inset-bottom,0px) + 40px);width:110px;height:110px;border:2px solid rgba(236,230,224,.25);border-radius:50%}
+#knob{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(236,230,224,.3)}
+#act,#thr{position:fixed;right:16px;border:2px solid var(--warm);border-radius:14px;background:var(--panel);font-weight:600;font-size:15px;padding:8px 12px;max-width:50vw}
+#act{bottom:calc(env(safe-area-inset-bottom,0px) + 50px);min-width:140px;min-height:60px}
+#thr{bottom:calc(env(safe-area-inset-bottom,0px) + 125px);min-height:44px;font-size:13px;border-color:#6fb1ff}
+#hid{position:fixed;inset:0;pointer-events:none;background:linear-gradient(#000 0 40%,transparent 40% 54%,#000 54%)}
+#scr{position:fixed;inset:0;z-index:8;background:#2a0000;display:flex;align-items:center;justify-content:center;overflow:hidden;animation:fl .1s steps(2) infinite}
+@keyframes fl{50%{background:#e00}}
+@keyframes zm{from{transform:scale(.4) rotate(-3deg)}to{transform:scale(1.7) rotate(3deg)}}
+.face{position:relative;width:70vmin;height:90vmin;border-radius:45% 45% 40% 40%;background:radial-gradient(circle at 50% 35%,#d9d4cc,#8c857b 70%,#3a3430);animation:zm .35s ease-in forwards}
+.face i{position:absolute;background:#000;border-radius:50%}
+.e1,.e2{top:28%;width:22%;height:14%;box-shadow:inset 0 0 0 5px #bfb8ad}
+.e1{left:18%}.e2{right:18%}
+.hr{left:0;right:0;top:-8%;height:30%;border-radius:50% 50% 0 0;background:#c9c9c9!important}
+.mo{left:22%;right:22%;bottom:10%;height:26%;border-radius:20% 20% 50% 50%;background:repeating-linear-gradient(90deg,#e8e0d0 0 7px,#5a0505 7px 16px)!important;box-shadow:0 0 30px #a00 inset}
+.bl{left:44%;top:40%;width:6%;height:40%;border-radius:40%;background:#8a0a0a!important}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 190px);transform:translateX(-50%);background:var(--red);color:#fff;padding:8px 14px;border-radius:10px;font-weight:600;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;text-align:center;max-width:90%}
+#ov{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;background:rgba(2,2,3,.95)}
+#ot{margin:0;font:700 clamp(1.8rem,8vw,2.6rem)/1.1 'Courier New',monospace;color:var(--red)}
+#op{margin:0;max-width:440px;line-height:1.5;white-space:pre-line}
+#ob{display:grid;gap:10px;width:min(100%,360px)}
+.btn{padding:14px 16px;border:2px solid var(--ink);border-radius:12px;background:transparent;color:var(--ink);font:600 16px system-ui,sans-serif}
+@media (orientation:landscape){#toast{bottom:calc(env(safe-area-inset-bottom,0px) + 100px)}}
+</style>
+</head>
+<body>
+    <div id="rotate-warning">
+    <div class="warning-text">Пожалуйста, переверните устройство горизонтально!</div>
+</div>
+
+<canvas id="cv"></canvas>
+<div id="vig"></div>
+<div id="hid" class="hidden"></div>
+<div id="hud" class="hidden">
+  <div id="stat"></div><div id="nz"></div><div id="msg"></div>
+  <div id="joy"><i id="knob"></i></div>
+  <button id="thr" class="hidden"></button>
+  <button id="act" class="hidden"></button>
+</div>
+<div id="toast"></div>
+<div id="scr" class="hidden"><div class="face"><i class="hr"></i><i class="e1"></i><i class="e2"></i><i class="bl"></i><i class="mo"></i></div></div>
+<div id="ov"><h1 id="ot"></h1><p id="op"></p><div id="ob"></div></div>
+<script src="three.min.js"></script>
+<script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
+<script>
+
+(function(){
+var $=function(i){return document.getElementById(i)};
+var cv=$('cv'),playing=false,started=false;
+var LANG='ru';try{LANG=localStorage.getItem('nanny_lang')||(/^(ru|uk|be)/i.test(navigator.language||'')?'ru':'en')}catch(e){}
+var EN={"Пожалуйста, переверните устройство горизонтально!": "Please rotate your device to landscape!", "Нянька": "Nanny", "Войти": "Enter", "Пропустить": "Skip", "Не запустилось": "Failed to start", "Браузер не поддерживает 3D (WebGL).": "Your browser does not support 3D (WebGL).", "Дневник: «Няня Агата ослепла в пожаре. Теперь она слышит всё. Не беги.»": "Diary: “Nanny Agatha went blind in a fire. Now she hears everything. Don’t run.”", "Дневник: «Днём она добрая. Но ночью мы прячемся в шкафах и не дышим.»": "Diary: “By day she is kind. But at night we hide in wardrobes and hold our breath.”", "Дневник: «Ключ разобрали на три части. Она думает, мы его не найдём.»": "Diary: “The key was split into three parts. She thinks we will never find it.”", "Найди три части ключа. Не шуми.": "Find three key parts. Stay quiet.", "Погремушка. Брось её, чтобы отвлечь няню.": "A rattle. Throw it to distract the nanny.", "Серебряный ключ. Похоже, он от кабинета Агаты наверху.": "A silver key. It looks like it opens Agatha’s study upstairs.", "Замок поддался. Скрипнула дверь.": "The lock gives way. The door creaks.", "Заперто. Нужен ключ от кабинета": "Locked. You need the study key", "Нужно 3 части ключа": "You need all 3 key parts", "Звякнуло вдали": "A clink in the distance", "Не дыши": "Don’t breathe", "Она нашла тебя.": "She found you.", "Она открыла укрытие.": "She opened your hiding spot.", " Осталось жизней: ": " Lives left: ", ". Ты снова в холле.": ". You are back in the hall.", "Взять часть ключа": "Take key part", "Взять серебряный ключ": "Take silver key", "Взять погремушку": "Take rattle", "Спрятаться": "Hide", "Подняться по лестнице": "Go upstairs", "Спуститься по лестнице": "Go downstairs", "Открыть кабинет": "Unlock the study", "Кабинет заперт": "The study is locked", "Открыть дверь и выйти": "Open the door and leave", "Дверь заперта": "The door is locked", "Выйти из укрытия": "Leave hiding spot", "Жизни: ": "Lives: ", "Ключ: ": "Key: ", "Погремушки: ": "Rattles: ", "Погр.: ": "Rattles: ", "Этаж: ": "Floor: ", "Каб.ключ": "Study key", "Шум: ": "Noise: ", "ТИХО": "QUIET", "ШАГОМ": "WALK", "БЕГ": "RUN", "Бросить погремушку": "Throw rattle", "Начать заново": "Start over", "Сыграть ещё": "Play again", "В главное меню": "Main menu", "Конец: Воспитанница": "Ending: The Ward", "Няня Агата гладит тебя по голове. «Теперь ты наша», — шепчет она. В шкафу кто-то тихо стучит. Это уже не твой голос.": "Nanny Agatha strokes your head. “Now you are ours,” she whispers. Something knocks softly inside the wardrobe. It is no longer your voice.", "Конец: Тишина": "Ending: Silence", "Ты ни разу не попался. Дверь открывается беззвучно, и лес принимает тебя. Ты бежишь, пока не решаешься обернуться. В окне горит свет, и няня Агата смотрит тебе вслед. Она улыбается и беззвучно шепчет: «Умница. Приходи ещё».": "You were never caught. The door opens without a sound, and the forest takes you in. You run until you dare to look back. A light burns in the window, and Nanny Agatha watches you go. She smiles and silently whispers: “Good girl. Come again.”", "Конец: Побег": "Ending: Escape", "Ты вываливаешься из дома и бежишь в лес. Когда ты оборачиваешься, в окне стоит она и смотрит прямо на тебя пустыми белыми глазами.": "You tumble out of the house and run into the forest. When you turn around, she is standing in the window, staring straight at you with empty white eyes.", " Жизней осталось: ": " Lives left: ", ". Хватило.": ". That was enough.", "Приют. Ночь. Дверь заперта. Няня Агата слепа, но слышит каждый звук.\n\nНайди три части ключа и выберись. В доме два этажа, лестница в холле. Часть ключа лежит в кабинете Агаты наверху, а ключ от кабинета ищи внизу. Левый палец: тяни стик слегка, чтобы красться, до упора, чтобы бежать (она услышит). Прячься в шкафах. Погремушкой можно отвлечь няню. Есть кровь и скримеры.": "An orphanage. Night. The door is locked. Nanny Agatha is blind, but she hears every sound.\n\nFind three key parts and get out. The house has two floors, with a staircase in the hall. One key part lies in Agatha’s study upstairs, and the study key must be found downstairs. Left thumb: drag the stick slightly to sneak, all the way to run (she will hear you). Hide in wardrobes. Throw a rattle to distract her. Contains blood and jump scares."};
+function L(s){return LANG==='en'&&EN[s]!==undefined?EN[s]:s}
+function mark(k){try{var d=JSON.parse(localStorage.getItem('nanny_end')||'{}');d[k]=1;localStorage.setItem('nanny_end',JSON.stringify(d))}catch(e){}}
+(function(){var w=document.querySelector('.warning-text');if(w)w.textContent=L('Пожалуйста, переверните устройство горизонтально!');document.documentElement.lang=LANG;document.title=L('Нянька')})();
+function ov(t,p,btns){
+  playing=false;$('ot').textContent=L(t);$('op').textContent=L(p);
+  var b=$('ob');b.innerHTML='';
+  btns.forEach(function(x){var e=document.createElement('button');e.className='btn';e.textContent=L(x[0]);e.addEventListener('click',x[1]);b.appendChild(e)});
+  $('ov').classList.remove('hidden');
+}
+function hideOv(){$('ov').classList.add('hidden');playing=started&&!caught}
+function toast(t){var e=$('toast');e.textContent=L(t);e.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.opacity=0},1700)}
+function say(t){var e=$('msg');e.textContent=L(t);e.style.opacity=1;clearTimeout(say.t);say.t=setTimeout(function(){e.style.opacity=0},Math.max(4500,t.length*70))}
+
+var R,sc,cam,caught=false;
+try{
+  R=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+  R.setPixelRatio(Math.min(window.devicePixelRatio||1,2));R.setSize(innerWidth,innerHeight);
+}catch(e){ov('Не запустилось','Браузер не поддерживает 3D (WebGL).',[]);return}
+sc=new THREE.Scene();sc.background=new THREE.Color(0x020203);sc.fog=new THREE.FogExp2(0x020203,.1);
+cam=new THREE.PerspectiveCamera(74,innerWidth/innerHeight,.1,30);cam.rotation.order='YXZ';sc.add(cam);
+function M(c,e){return new THREE.MeshLambertMaterial({color:c,emissive:e||0})}
+function B(w,h,d,c,x,y,z,e){var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c,e));m.position.set(x,y,z);sc.add(m);return m}
+
+/* два этажа: cf = этаж, который строим сейчас */
+var FH=3.2,cf=0,COL=[[],[]];
+function addCol(x,z,w,d){var b=[x-w/2-.3,x+w/2+.3,z-d/2-.3,z+d/2+.3];COL[cf].push(b);return b}
+function F(w,h,d,c,x,z){B(w,h,d,c,x,cf*FH+h/2,z);addCol(x,z,w,d)}
+function W(x0,z0,x1,z1){
+  var w=Math.max(Math.abs(x1-x0),.2),d=Math.max(Math.abs(z1-z0),.2),x=(x0+x1)/2,z=(z0+z1)/2;
+  B(w,3,d,cf?0x3b3340:0x4a3f36,x,cf*FH+1.5,z);addCol(x,z,w,d);
+}
+function blood(x,z,s){B(s,.01,s*.6,0x5a0a0a,x,cf*FH+.012,z,0x1a0000)}
+function streak(x,z,v){B(v?.06:.5,1.4,v?.5:.06,0x6a0a0a,x,cf*FH+1.6,z,0x200000)}
+function build(f){
+  cf=f;
+  W(-9,-6,9,-6);W(-9,-6,-9,6);W(9,-6,9,6);
+  if(f===0){W(-9,6,-.8,6);W(.8,6,9,6)}else W(-9,6,9,6);
+  [-3,3].forEach(function(x){W(x,-6,x,-3.8);W(x,-2.2,x,2.2);W(x,3.8,x,6)});
+  W(-9,0,-3,0);W(3,0,9,0);
+}
+
+/* полы и потолки */
+var c2=document.createElement('canvas');c2.width=c2.height=64;
+var g2=c2.getContext('2d');g2.fillStyle='#3a2c22';g2.fillRect(0,0,64,64);g2.fillStyle='#2a1f18';
+for(var pi=0;pi<64;pi+=16)g2.fillRect(0,pi,64,2);
+var tx=new THREE.CanvasTexture(c2);tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(9,6);
+var fl=new THREE.Mesh(new THREE.PlaneGeometry(18,12),new THREE.MeshLambertMaterial({map:tx}));fl.rotation.x=-Math.PI/2;sc.add(fl);
+/* перекрытие между этажами с проёмом для лестницы */
+function slab(x0,x1,z0,z1){B(x1-x0,.2,z1-z0,0x2e231b,(x0+x1)/2,3.1,(z0+z1)/2)}
+slab(-9,-3,-6,6);slab(-1.6,9,-6,6);slab(-3,-1.6,-6,-2);slab(-3,-1.6,2,6);
+var ce2=new THREE.Mesh(new THREE.PlaneGeometry(18,12),M(0x1a1512));ce2.rotation.x=Math.PI/2;ce2.position.y=FH+3;sc.add(ce2);
+/* лестница в холле */
+for(var si=0;si<8;si++){var sh=(si+1)*FH/8;B(1.4,sh,.5,0x3a2c22,-2.3,sh/2,-1.75+si*.5)}
+B(.06,1,4.2,0x2a1f18,-1.55,FH+.5,0);
+COL[0].push([-3.3,-1.3,-2.3,2.3]);COL[1].push([-3.3,-1.3,-2.3,2.3]);
+
+/* ЭТАЖ 1 */
+build(0);
+B(1.6,2.4,.15,0x3a2418,0,1.2,5.95);COL[0].push([-1.1,1.1,5.5,6.3]);
+F(2,.6,1,0x5a4a3a,-7.6,-4.2);F(1.2,2.2,.8,0x4a3426,-8.4,-5.4);
+F(1.2,1.2,.8,0x6a3a3a,-8.2,5.2);F(1.4,.8,1,0x5a4a3a,-5,5.2);
+F(1.6,.9,1.2,0x7a7a7a,7,-4.6);F(1.2,2,.8,0x4a4a55,8.2,-5.4);
+F(.6,2,2,0x5a5a4a,8.5,3.2);F(1.2,1.6,.8,0x55453a,8.2,5.4);
+[[-1,-2,1.6],[1.5,2,1],[-6,-1.5,1.2],[5,-2,1.4],[-5,2,.9],[6.5,1.5,1.1],[0,4.5,1.8],[-8,3,.8]].forEach(function(b){blood(b[0],b[1],b[2])});
+[[-3,-3.2],[3,3.1],[-9,2],[9,-3],[0,-6],[-3,4.5]].forEach(function(b){
+  var v=Math.abs(b[0])===9||Math.abs(b[0])===3;
+  streak(b[0]+(b[0]===-9?.12:b[0]===9?-.12:0),b[1]+(b[1]===-6?.12:0),v);
+});
+
+function win(x,b){B(1.4,1.1,.04,0x14213a,x,b+1.7,5.88,0x0c1c38);B(1.6,.1,.08,0x2a1f18,x,b+2.3,5.86);B(1.6,.1,.08,0x2a1f18,x,b+1.1,5.86);B(.1,1.3,.08,0x2a1f18,x-.75,b+1.7,5.86);B(.1,1.3,.08,0x2a1f18,x+.75,b+1.7,5.86);B(.06,1.1,.06,0x2a1f18,x,b+1.7,5.85);B(1.4,.06,.06,0x2a1f18,x,b+1.7,5.85)}
+win(-4.5,0);win(4.5,0);
+/* ЭТАЖ 2 */
+build(1);
+win(-4.5,FH);win(4.5,FH);
+F(1.8,.5,1,0x5a4a5a,-7.7,-4.4);F(1.2,2.2,.8,0x4a3426,-8.4,-1);
+F(2,.8,1,0x4a3426,5.8,-4.8);F(1.2,2,.8,0x2f3a2f,8.2,-5.4);
+F(2.2,.6,1,0xcfd8dc,-7.4,4.8);F(1.2,1.8,.8,0x555560,-8.4,1.3);
+F(2,.8,1,0x4a3426,7.2,4.6);F(1.2,2,.8,0x2a2a35,8.3,1.3);
+B(1.6,.02,.6,0x5a0a0a,-7.4,FH+.62,4.8,0x1a0000);
+[[-6,-2,1.3],[0,-4,1.8],[-1,4.5,1.2],[6,-3,1.1],[5,3,1.5],[-5,2.5,1],[0,1,1.4]].forEach(function(b){blood(b[0],b[1],b[2])});
+[[-3,-3.4],[3,-3.4],[-9,-3],[9,3],[0,-6],[-3,3.2],[3,.8]].forEach(function(b){
+  var v=Math.abs(b[0])===9||Math.abs(b[0])===3;
+  streak(b[0]+(b[0]===-9?.12:b[0]===9?-.12:0),b[1]+(b[1]===-6?.12:0),v);
+});
+/* запертая дверь в кабинет Агаты */
+var lockD=B(.15,2.4,1.6,0x3a2418,3,FH+1.2,3);
+var lockCol=addCol(3,3,.15,1.6);
+
+/* свет: по 3 лампы на этаж, гаснут на чужом этаже */
+var cl=new THREE.PointLight(0xffe0b0,1.15,9,1.5);cam.add(cl);
+sc.add(new THREE.AmbientLight(0x2a2230,.5));
+var RL=[];
+[0,1].forEach(function(f){[[-6,0],[0,0],[6,0]].forEach(function(p,i){
+  var b=i===1?.55:.4,l=new THREE.PointLight(0xaa7755,b,9,1.6);l.position.set(p[0],f*FH+2.5,p[1]);sc.add(l);
+  RL.push({l:l,f:f,b:b,h:i===1});
+})});
+
+/* предметы */
+var ITEMS=[
+ {t:'key',x:-7.6,z:-4.2,n:0,f:0},{t:'cab',x:7.2,z:-1.2,f:0},
+ {t:'key',x:7,z:-1.2,n:1,f:1},{t:'key',x:7,z:3.6,n:2,f:1},
+ {t:'rat',x:7.3,z:3.5,f:0},{t:'rat',x:0,z:-5.3,f:0},{t:'rat',x:-7,z:3.4,f:1}
+];
+ITEMS.forEach(function(it){
+  var c=it.t==='key'?[0xffd54a,0x806000]:it.t==='cab'?[0xcfd8dc,0x303a40]:[0x6fb1ff,0x1a3a66];
+  it.m=B(.25,.25,.25,c[0],it.x,(it.t==='rat'?.3:.85)+it.f*FH,it.z,c[1]);
+});
+var NOTES=['Дневник: «Няня Агата ослепла в пожаре. Теперь она слышит всё. Не беги.»','Дневник: «Днём она добрая. Но ночью мы прячемся в шкафах и не дышим.»','Дневник: «Ключ разобрали на три части. Она думает, мы его не найдём.»'];
+var HIDES=[
+ {c:[-8.4,-5.4],e:[-7.1,-5.2],f:0},{c:[-8.2,5.2],e:[-6.9,4.9],f:0},{c:[8.2,-5.4],e:[6.9,-5],f:0},{c:[8.2,5.4],e:[6.9,5],f:0},
+ {c:[-8.4,-1],e:[-7,-1.2],f:1},{c:[8.2,-5.4],e:[6.9,-5],f:1},{c:[-8.4,1.3],e:[-7,1.5],f:1},{c:[8.3,1.3],e:[7,1.5],f:1}
+];
+
+/* няня */
+function part(geo,c,x,y,z,e){var m=new THREE.Mesh(geo,M(c,e));m.position.set(x,y,z);return m}
+function buildNanny(){var g=new THREE.Group();
+g.add(part(new THREE.CylinderGeometry(.22,.55,1.2,10),0x2c2c3c,0,.6,0));
+g.add(part(new THREE.CylinderGeometry(.25,.25,.7,10),0x2c2c3c,0,1.4,0));
+g.add(part(new THREE.BoxGeometry(.42,.7,.05),0x7a0f0f,0,1.2,.25));
+g.add(part(new THREE.SphereGeometry(.2,12,10),0xc9c0b4,0,1.9,0));
+g.add(part(new THREE.SphereGeometry(.22,10,8),0xdddddd,0,2.0,-.05));
+g.add(part(new THREE.BoxGeometry(.06,.06,.02),0xffffff,-.07,1.92,.18,0xffffff));
+g.add(part(new THREE.BoxGeometry(.06,.06,.02),0xffffff,.07,1.92,.18,0xffffff));
+g.add(part(new THREE.BoxGeometry(.1,.1,.7),0xc9c0b4,-.3,1.5,.4));
+g.add(part(new THREE.BoxGeometry(.1,.1,.7),0xc9c0b4,.3,1.5,.4));
+return g}
+var nm=buildNanny();sc.add(nm);
+
+/* граф путей: узлы 0-10 этаж 1, 11-21 этаж 2, 22-23 низ и верх лестницы */
+var BASE=[[-6,-3],[-6,3],[6,-3],[6,3],[0,-3],[0,3],[-3,-3],[-3,3],[3,-3],[3,3],[0,0]];
+var NODES=[];[0,1].forEach(function(f){BASE.forEach(function(p){NODES.push([p[0],p[1],f])})});
+NODES.push([-2.3,-2.85,0]);NODES.push([-2.3,2.85,1]);
+var EDG0=[[0,6],[6,4],[1,7],[7,5],[2,8],[8,4],[3,9],[9,5],[4,10],[10,5]],EDG=[];
+EDG0.forEach(function(e){EDG.push([e[0],e[1]]);EDG.push([e[0]+11,e[1]+11])});
+EDG.push([22,4],[22,6],[22,23],[23,16],[23,18]);
+var ADJ=NODES.map(function(){return []});
+EDG.forEach(function(e){ADJ[e[0]].push(e[1]);ADJ[e[1]].push(e[0])});
+var ROOMN=[[[0,6],[1,7],[2,8],[3,9],[4,5,10,22]],[[11,17],[12,18],[13,19],[14,20],[15,16,21,23]]];
+function roomOf(x,z){return x<-3?(z<0?0:1):x>3?(z<0?2:3):4}
+function nearNode(f,r,x,z){var b=-1,bd=1e9;ROOMN[f][r].forEach(function(n){var d=(NODES[n][0]-x)*(NODES[n][0]-x)+(NODES[n][1]-z)*(NODES[n][1]-z);if(d<bd){bd=d;b=n}});return b}
+function bfs(a,b){
+  var prev={},q=[a],seen={};seen[a]=1;
+  while(q.length){var c=q.shift();if(c===b)break;ADJ[c].forEach(function(n){if(!seen[n]){seen[n]=1;prev[n]=c;q.push(n)}})}
+  var p=[],c=b;while(c!==a&&c!==undefined){p.unshift(c);c=prev[c]}return p;
+}
+var N={x:6,z:3,f:0,st:'pat',path:[],w:0,chk:0,frz:3,tap:0,stair:0};
+function setTarget(x,z,f){
+  var r1=roomOf(N.x,N.z),r2=roomOf(x,z);
+  if(N.f===f&&r1===r2){N.path=[[x,z,f]];return}
+  var p=bfs(nearNode(N.f,r1,N.x,N.z),nearNode(f,r2,x,z)).map(function(i){return NODES[i]});
+  p.push([x,z,f]);N.path=p;
+}
+var WPS=[0,1,2,3,10,11,12,13,14,21];
+function pickWp(){var t=NODES[WPS[Math.floor(Math.random()*WPS.length)]];setTarget(t[0]+(Math.random()-.5)*2,t[1]+(Math.random()-.5)*2,t[2])}
+function dist(ax,az,bx,bz){var dx=ax-bx,dz=az-bz;return Math.sqrt(dx*dx+dz*dz)}
+function hear(x,z,r,f){
+  if(caught||N.frz>0)return;
+  var rr=N.f===f?r:r*.55;
+  if(dist(N.x,N.z,x,z)<rr){N.st='inv';N.w=0;N.chk=0;N.stair=0;setTarget(x+(Math.random()-.5)*.8,z+(Math.random()-.5)*.8,f)}
+}
+
+/* звук */
+var AC=null,out=null;
+function aud(){
+  if(AC)return;
+  try{
+    AC=new (window.AudioContext||window.webkitAudioContext)();
+    out=AC.createGain();out.gain.value=.8;out.connect(AC.destination);
+    var o=AC.createOscillator(),lf=AC.createBiquadFilter(),dg=AC.createGain();
+    o.type='sawtooth';o.frequency.value=40;lf.type='lowpass';lf.frequency.value=90;dg.gain.value=.05;
+    o.connect(lf);lf.connect(dg);dg.connect(out);o.start();
+  }catch(e){AC=null}
+}
+function burst(dur,freq,gain,type){
+  if(!AC||gain<=0)return;
+  var n=Math.floor(AC.sampleRate*dur),buf=AC.createBuffer(1,n,AC.sampleRate),d=buf.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  var s=AC.createBufferSource();s.buffer=buf;
+  var f=AC.createBiquadFilter();f.type=type;f.frequency.value=freq;
+  var gg=AC.createGain();gg.gain.value=gain;s.connect(f);f.connect(gg);gg.connect(out);s.start();
+}
+function screamSnd(){
+  if(!AC)return;
+  burst(1.2,1500,1.6,'bandpass');burst(.8,90,2,'lowpass');
+  var o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.value=480;
+  o.frequency.exponentialRampToValueAtTime(900,AC.currentTime+.8);gg.gain.value=.5;
+  gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+1.1);o.connect(gg);gg.connect(out);o.start();o.stop(AC.currentTime+1.1);
+}
+
+/* состояние */
+var lives=3,keys=0,rat=0,hidden=-1,hasCab=false,pf=0,curF=0,tr=null;
+var pos={x:0,z:-4.6},yaw=Math.PI,pitch=0,mv={x:0,y:0},kb={},joyId=null,lookId=null,j0={x:0,y:0},lp={x:0,y:0},actK=null,mode=1,nzT=0,walkT=0;
+function hudUp(){
+  $('stat').textContent=L('Жизни: ')+lives+'  '+L('Ключ: ')+keys+'/3'+(hasCab?'  '+L('Каб.ключ'):'')+'  '+L('Погр.: ')+rat+'  '+L('Этаж: ')+(pf+1);
+  $('thr').classList.toggle('hidden',rat<1||hidden>=0||!playing);
+  $('thr').textContent=L('Бросить погремушку')+' ('+rat+')';
+}
+function catchP(msg){
+  if(caught)return;
+  caught=true;playing=false;
+  $('scr').classList.remove('hidden');screamSnd();
+  setTimeout(function(){
+    $('scr').classList.add('hidden');lives--;
+    if(lives<=0){
+      hudUp();
+      mark('caught');ov('Конец: Воспитанница','Няня Агата гладит тебя по голове. «Теперь ты наша», — шепчет она. В шкафу кто-то тихо стучит. Это уже не твой голос.',[['Начать заново',function(){location.reload()}],['В главное меню',function(){location.href='index.html'}]]);
+    }else{
+      pos={x:0,z:-4.6};yaw=Math.PI;pitch=0;hidden=-1;tr=null;pf=0;curF=0;$('hid').classList.add('hidden');
+      N.x=6;N.z=3;N.f=0;N.path=[];N.st='pat';N.frz=3.5;N.w=0;N.stair=0;
+      caught=false;playing=started;hudUp();
+      say(L(msg||'Она нашла тебя.')+L(' Осталось жизней: ')+lives+L('. Ты снова в холле.'));
+    }
+  },1500);
+}
+
+/* действия */
+function labelOf(k){var s=labelOf0(k);var m=/^(Дверь заперта) (\(.*\))$/.exec(s);return m?L(m[1])+' '+m[2]:L(s)}
+function labelOf0(k){
+  if(k.t==='key')return 'Взять часть ключа';
+  if(k.t==='cab')return 'Взять серебряный ключ';
+  if(k.t==='rat')return 'Взять погремушку';
+  if(k.t==='hide')return 'Спрятаться';
+  if(k.t==='stairs')return pf===0?'Подняться по лестнице':'Спуститься по лестнице';
+  if(k.t==='lock')return hasCab?'Открыть кабинет':'Кабинет заперт';
+  return keys>=3?'Открыть дверь и выйти':'Дверь заперта ('+keys+'/3)';
+}
+function doAct(){
+  if(!playing||tr)return;
+  if(hidden>=0){var e=HIDES[hidden].e;pos={x:e[0],z:e[1]};hidden=-1;$('hid').classList.add('hidden');hudUp();return}
+  var k=actK;if(!k)return;
+  if(k.t==='key'||k.t==='rat'||k.t==='cab'){
+    sc.remove(k.m);ITEMS.splice(ITEMS.indexOf(k),1);burst(.1,900,.3,'bandpass');
+    if(k.t==='key'){keys++;say(NOTES[k.n])}
+    else if(k.t==='cab'){hasCab=true;say('Серебряный ключ. Похоже, он от кабинета Агаты наверху.')}
+    else{rat++;say('Погремушка. Брось её, чтобы отвлечь няню.')}
+    hudUp();
+  }else if(k.t==='stairs'){
+    tr={t:0,f0:pf,f1:1-pf,a:{x:pos.x,z:pos.z},b:pf===0?{x:-2.3,z:2.85}:{x:-2.3,z:-2.85},st:0};
+    hear(pos.x,pos.z,6,pf);burst(.3,200,.5,'lowpass');
+  }else if(k.t==='lock'){
+    if(!hasCab){toast('Заперто. Нужен ключ от кабинета');return}
+    sc.remove(lockD);lockD=null;COL[1].splice(COL[1].indexOf(lockCol),1);
+    burst(.2,500,.8,'bandpass');say('Замок поддался. Скрипнула дверь.');hear(pos.x,pos.z,6,1);
+  }else if(k.t==='hide'){
+    var i=HIDES.indexOf(k.h),c=k.h.c,ex=k.h.e;hidden=i;
+    yaw=Math.atan2(-(ex[0]-c[0]),-(ex[1]-c[1]));pitch=0;
+    $('hid').classList.remove('hidden');hudUp();
+    if(N.st==='inv'&&N.f===pf&&dist(N.x,N.z,c[0],c[1])<7)toast('Не дыши');
+  }else{
+    if(keys<3){toast('Нужно 3 части ключа');return}
+    playing=false;
+    escapeScene(lives);
+  }
+}
+$('act').addEventListener('click',doAct);
+$('thr').addEventListener('click',function(){
+  if(!playing||rat<1||hidden>=0||tr)return;
+  rat--;var tx=Math.max(-8.5,Math.min(8.5,pos.x-Math.sin(yaw)*5)),tz=Math.max(-5.5,Math.min(5.5,pos.z-Math.cos(yaw)*5));
+  burst(.2,2200,.7,'bandpass');hear(tx,tz,16,pf);toast('Звякнуло вдали');hudUp();
+});
+
+/* управление */
+cv.addEventListener('contextmenu',function(e){e.preventDefault()});
+cv.addEventListener('pointerdown',function(e){
+  if(!playing)return;
+  if(e.pointerType==='touch'&&e.clientX<innerWidth*.45){joyId=e.pointerId;j0={x:e.clientX,y:e.clientY}}
+  else{lookId=e.pointerId;lp={x:e.clientX,y:e.clientY}}
+  try{cv.setPointerCapture(e.pointerId)}catch(x){}
+});
+cv.addEventListener('pointermove',function(e){
+  if(e.pointerId===joyId){
+    var dx=(e.clientX-j0.x)/45,dy=(e.clientY-j0.y)/45,l=Math.sqrt(dx*dx+dy*dy);
+    if(l>1){dx/=l;dy/=l}
+    mv.x=dx;mv.y=-dy;$('knob').style.transform='translate('+dx*30+'px,'+dy*30+'px)';
+  }else if(e.pointerId===lookId){
+    yaw-=(e.clientX-lp.x)*.005;pitch-=(e.clientY-lp.y)*.005;
+    pitch=Math.max(-1.1,Math.min(1.1,pitch));lp={x:e.clientX,y:e.clientY};
+  }
+});
+function up(e){
+  if(e.pointerId===joyId){joyId=null;mv.x=mv.y=0;$('knob').style.transform='none'}
+  if(e.pointerId===lookId)lookId=null;
+}
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+addEventListener('keydown',function(e){var k=e.key.toLowerCase();kb[k]=true;if(k==='e'||k===' ')doAct()});
+addEventListener('keyup',function(e){kb[e.key.toLowerCase()]=false});
+function hit(x,z){var C=COL[pf];for(var i=0;i<C.length;i++){var b=C[i];if(x>b[0]&&x<b[1]&&z>b[2]&&z<b[3])return true}return false}
+var MODES=['ТИХО','ШАГОМ','БЕГ'],MC=['#7ad07a','#ffd54a','#ff5a4a'],SPD=[1.1,2,3.2],RAD=[1.5,4.5,9];
+function move(dt){
+  if(hidden>=0||tr){mode=0;return false}
+  var kx=(kb['d']||kb['arrowright']?1:0)-(kb['a']||kb['arrowleft']?1:0);
+  var ky=(kb['w']||kb['arrowup']?1:0)-(kb['s']||kb['arrowdown']?1:0);
+  var ix,iy,l;
+  if(joyId!==null){ix=mv.x;iy=mv.y;l=Math.sqrt(ix*ix+iy*iy)}
+  else{ix=kx;iy=ky;l=Math.sqrt(ix*ix+iy*iy);if(l>0)l=kb['shift']?.35:.7}
+  if(l<.1){mode=0;return false}
+  mode=l<.5?0:l<.92?1:2;
+  var n=Math.sqrt(ix*ix+iy*iy);if(n>1){ix/=n;iy/=n}
+  var s=SPD[mode]*dt,dx=(-Math.sin(yaw)*iy+Math.cos(yaw)*ix)*s,dz=(-Math.cos(yaw)*iy-Math.sin(yaw)*ix)*s;
+  if(!hit(pos.x+dx,pos.z))pos.x+=dx;
+  if(!hit(pos.x,pos.z+dz))pos.z+=dz;
+  walkT+=dt;nzT-=dt;
+  if(nzT<=0){nzT=.45;burst(.06,300,.12+mode*.1,'lowpass');hear(pos.x,pos.z,RAD[mode],pf)}
+  return true;
+}
+
+/* няня: цикл. Между этажами считаем расстояние с поправкой */
+function effD(){return dist(N.x,N.z,pos.x,pos.z)+(N.f!==pf?5:0)}
+var hb=0;
+function nanny(dt){
+  nm.position.set(N.x,N.f*FH,N.z);
+  if(caught)return;
+  if(N.frz>0){N.frz-=dt;return}
+  var t=N.path[0],sp=(N.st==='inv'?2.2:1.25)*dt;
+  if(t&&t[2]!==N.f){
+    N.stair+=dt;N.tap-=dt;
+    if(N.tap<=0){N.tap=.4;burst(.06,260,Math.max(0,1-effD()/12),'lowpass')}
+    if(N.stair>2.2){N.stair=0;N.f=t[2];N.x=t[0];N.z=t[1];N.path.shift()}
+  }else if(t){
+    var dx=t[0]-N.x,dz=t[1]-N.z,d=Math.sqrt(dx*dx+dz*dz);
+    if(d<sp+.05){N.x=t[0];N.z=t[1];N.path.shift()}
+    else{N.x+=dx/d*sp;N.z+=dz/d*sp;nm.rotation.y=Math.atan2(dx,dz)}
+    N.tap-=dt;if(N.tap<=0){N.tap=.55;burst(.05,650,Math.max(0,1.1-effD()/13),'bandpass')}
+  }else{
+    N.w+=dt;
+    if(N.st==='inv'&&N.w>3){N.st='pat';N.w=0;pickWp()}
+    else if(N.st==='pat'&&N.w>1){N.w=0;pickWp()}
+    if(hidden>=0&&N.st==='inv'&&N.chk<=0&&HIDES[hidden].f===N.f&&dist(N.x,N.z,HIDES[hidden].c[0],HIDES[hidden].c[1])<3.2){
+      N.chk=9;if(Math.random()<.45)catchP('Она открыла укрытие.');
+    }
+  }
+  N.chk-=dt;
+  if(hidden<0&&!tr&&N.f===pf&&dist(N.x,N.z,pos.x,pos.z)<1.25)catchP();
+  nm.position.y=N.f*FH+Math.abs(Math.sin(performance.now()/260))*.04;
+}
+
+var t0=performance.now(),fk=0,fkm=1;
+function loop(){
+  requestAnimationFrame(loop);
+  var n=performance.now(),dt=Math.min(.05,(n-t0)/1000);t0=n;
+  if(cut){cutStep(dt);return}
+  var moving=playing?move(dt):false;
+  /* переход по лестнице */
+  var s=0;
+  if(tr){
+    tr.t+=dt/1.6;var k=Math.min(1,tr.t);s=k*k*(3-2*k);
+    pos.x=tr.a.x+(tr.b.x-tr.a.x)*s;pos.z=tr.a.z+(tr.b.z-tr.a.z)*s;
+    curF=tr.f0+(tr.f1-tr.f0)*s;
+    tr.st-=dt;if(tr.st<=0){tr.st=.35;burst(.06,260,.25,'lowpass')}
+    if(k>=1){pf=tr.f1;curF=pf;tr=null;hudUp()}
+  }
+  if(playing)nanny(dt);else nm.position.set(N.x,N.f*FH,N.z);
+  var dn=effD();
+  if(playing&&dn<8){hb-=dt;if(hb<=0){hb=.3+dn*.09;burst(.09,65,Math.min(1,1.1-dn/8),'lowpass');setTimeout(function(){burst(.07,60,.6,'lowpass')},140)}}
+  var dg=playing?Math.max(0,1-dn/8):0;
+  $('vig').style.background='radial-gradient(ellipse at center,transparent '+(58-dg*28)+'%,rgba('+Math.round(dg*140)+',0,0,.85) 100%)';
+  /* мерцание ламп холла */
+  fk-=dt;if(fk<=0){fk=.1+Math.random()*(dn<6?.5:3);fkm=Math.random()<.2?.2:1}
+  var camBase=(hidden>=0?HIDES[hidden].f:curF)*FH;
+  RL.forEach(function(r){
+    var w=Math.max(0,1-Math.abs(camBase-r.f*FH)/FH);
+    r.l.intensity=r.b*w*(r.h?fkm:1);
+  });
+  if(hidden>=0)cam.position.set(HIDES[hidden].c[0],camBase+1.3,HIDES[hidden].c[1]);
+  else cam.position.set(pos.x,camBase+1.55+(moving?Math.sin(walkT*8)*.03:0),pos.z);
+  cam.rotation.set(pitch,yaw,0);
+  ITEMS.forEach(function(it){it.m.rotation.y+=dt*2});
+  /* ближайшее действие */
+  if(playing&&!tr){
+    var best=null,bd=99,d;
+    if(hidden>=0){actK={t:'out'};$('act').textContent=L('Выйти из укрытия');$('act').classList.remove('hidden')}
+    else{
+      ITEMS.forEach(function(it){if(it.f!==pf)return;d=dist(pos.x,pos.z,it.x,it.z);if(d<1.7&&d<bd){bd=d;best=it}});
+      HIDES.forEach(function(h){if(h.f!==pf)return;d=dist(pos.x,pos.z,h.c[0],h.c[1]);if(d<2&&d<bd){bd=d;best={t:'hide',h:h}}});
+      d=dist(pos.x,pos.z,-2.3,pf===0?-2.85:2.85);if(d<1.7&&d<bd){bd=d;best={t:'stairs'}}
+      if(pf===0){d=dist(pos.x,pos.z,0,5.8);if(d<1.8&&d<bd){bd=d;best={t:'door'}}}
+      else if(lockD){d=dist(pos.x,pos.z,3,3);if(d<2&&d<bd){bd=d;best={t:'lock'}}}
+      actK=best;
+      if(best){$('act').textContent=labelOf(best);$('act').classList.remove('hidden')}else $('act').classList.add('hidden');
+    }
+    $('nz').textContent=L('Шум: ')+L(MODES[mode]);$('nz').style.color=MC[mode];
+  }else $('act').classList.add('hidden');
+  R.render(sc,cam);
+}
+/* ---------- финальная сцена: побег в лес ---------- */
+var cut=null,T1=8,T2=11.6,T3=18.8;
+function sting(){
+  burst(.7,2000,1,'bandpass');burst(1,70,1.6,'lowpass');
+  if(AC){var o=AC.createOscillator(),gg=AC.createGain();o.type='sawtooth';o.frequency.value=110;
+    o.frequency.exponentialRampToValueAtTime(55,AC.currentTime+1.2);gg.gain.value=.35;
+    gg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+1.3);o.connect(gg);gg.connect(out);o.start();o.stop(AC.currentTime+1.3)}
+}
+function buildForest(FL){
+  var s=new THREE.Scene();s.background=new THREE.Color(0x03060c);s.fog=new THREE.FogExp2(0x03060c,.028);
+  function mt(c,e,nf){var x=new THREE.MeshLambertMaterial({color:c,emissive:e||0});if(nf)x.fog=false;return x}
+  function bx(w,h,d,c,x,y,z,e,nf){var q=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mt(c,e,nf));q.position.set(x,y,z);s.add(q);return q}
+  s.add(new THREE.AmbientLight(0x35486e,1.25));
+  var md=new THREE.DirectionalLight(0x8fb0e0,.85);md.position.set(-20,30,40);s.add(md);
+  var gd=new THREE.Mesh(new THREE.PlaneGeometry(260,260),mt(0x0c1511));gd.rotation.x=-Math.PI/2;s.add(gd);
+  var pt=new THREE.Mesh(new THREE.PlaneGeometry(3.2,140),mt(0x1c1812));pt.rotation.x=-Math.PI/2;pt.position.set(0,.02,70);s.add(pt);
+  var mn=new THREE.Mesh(new THREE.SphereGeometry(6,16,12),new THREE.MeshBasicMaterial({color:0xe6edff,fog:false}));mn.position.set(-30,46,-85);s.add(mn);
+  var sa=new Float32Array(300),i;
+  for(i=0;i<100;i++){var an=Math.random()*Math.PI*2,rr=40+Math.random()*60;sa[i*3]=Math.cos(an)*rr*2;sa[i*3+1]=25+Math.random()*50;sa[i*3+2]=Math.sin(an)*rr*2}
+  var sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(sa,3));
+  s.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:1.4,sizeAttenuation:false,fog:false})));
+  /* лес */
+  var tg=new THREE.CylinderGeometry(.22,.3,5,6),fg=new THREE.ConeGeometry(1.6,6,7),tm=mt(0x150f0a),fm=mt(0x07140d);
+  function tree(x,z){var h=.8+Math.random()*.7,t=new THREE.Mesh(tg,tm);t.position.set(x,2.5*h,z);t.scale.y=h;s.add(t);
+    var f=new THREE.Mesh(fg,fm);f.position.set(x,5.2*h+1,z);f.scale.set(h,h*(1+Math.random()*.4),h);s.add(f)}
+  for(var z=10;z<=95;z+=1.7){var sd=Math.random()<.5?-1:1;tree(sd*(3.2+Math.random()*3),z+Math.random());tree(-sd*(4+Math.random()*10),z+Math.random()*1.5)}
+  for(var k=0;k<40;k++)tree((Math.random()<.5?-1:1)*(10+Math.random()*30),-10+Math.random()*110);
+  /* дом снаружи */
+  var H=FL*3.2,wall=0x4a3f36,FZ=6.05;
+  bx(18,H,10.5,wall,0,H/2,-.75);bx(.4,H,1.6,wall,-9,H/2,5.2);bx(.4,H,1.6,wall,9,H/2,5.2);
+  var rf=0x241d19,r1=bx(19.5,.35,8,rf,0,H+1.5,3);r1.rotation.x=.5;var r2=bx(19.5,.35,8,rf,0,H+1.5,-3);r2.rotation.x=-.5;
+  function seg(x0,x1,y0,y1){if(x1-x0<.01||y1-y0<.01)return;bx(x1-x0,y1-y0,.3,wall,(x0+x1)/2,(y0+y1)/2,FZ)}
+  var base=(FL-1)*3.2,hy0=base+1,hy1=base+2.4,mid=base+1.7;
+  for(var f2=0;f2<FL;f2++){
+    var b0=f2*3.2,b1=b0+(f2===FL-1?3:3.2);
+    if(f2===FL-1){seg(-9,3.7,b0,b1);seg(5.3,9,b0,b1);seg(3.7,5.3,b0,hy0);seg(3.7,5.3,hy1,b1)}else seg(-9,9,b0,b1);
+    [-4.5,4.5].forEach(function(x){
+      var y=b0+1.7,hole=(f2===FL-1&&x===4.5);
+      if(!hole)bx(1.6,1.4,.06,0x0e1a30,x,y,FZ+.18,0x050a14);
+      bx(1.8,.12,.14,0x2a1f18,x,y+.76,FZ+.2);bx(1.8,.12,.14,0x2a1f18,x,y-.76,FZ+.2);
+      bx(.12,1.5,.14,0x2a1f18,x-.85,y,FZ+.2);bx(.12,1.5,.14,0x2a1f18,x+.85,y,FZ+.2);
+    });
+  }
+  /* открытая дверь, из которой ты выбежал */
+  bx(1.6,2.4,.1,0x020203,0,1.2,FZ+.22);bx(.08,2.4,1.5,0x3a2418,-.85,1.2,FZ+1);
+  bx(1.9,.14,.2,0x2a1f18,0,2.46,FZ+.25);
+  var pl=new THREE.PointLight(0xffa860,1.1,9);pl.position.set(0,2.4,FZ+1.5);s.add(pl);
+  /* окно, где стоит она */
+  var glass=new THREE.Mesh(new THREE.BoxGeometry(1.6,1.4,.04),new THREE.MeshLambertMaterial({color:0x445566,transparent:true,opacity:.22,depthWrite:false}));
+  glass.material.fog=false;glass.position.set(4.5,mid,FZ+.17);s.add(glass);
+  var lit=bx(1.6,1.4,.1,0x050505,4.5,mid,4.6,0,true);
+  var ll=new THREE.PointLight(0xffb060,0,8);ll.position.set(4.5,mid,5.6);s.add(ll);
+  var nan=buildNanny();nan.position.set(4.5,base,5.5);nan.visible=false;
+  nan.traverse(function(o){if(o.material)o.material.fog=false});nan.children[5].scale.set(1.8,1.8,1.8);nan.children[6].scale.set(1.8,1.8,1.8);s.add(nan);
+  var cam2=new THREE.PerspectiveCamera(74,innerWidth/innerHeight,.1,200);cam2.rotation.order='YXZ';
+  return {s:s,cam:cam2,nan:nan,lit:lit,light:ll,mid:mid};
+}
+function startCut(done){
+  var f=buildForest(2);
+  var fade=document.createElement('div');fade.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:#000;opacity:1;transition:opacity 1.2s;z-index:50;pointer-events:none';
+  var sk=document.createElement('button');sk.textContent=L('Пропустить');
+  sk.style.cssText='position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:51;min-height:44px;padding:8px 14px;border:2px solid #ece6e0;border-radius:12px;background:rgba(10,8,8,.6);color:#ece6e0;font:600 14px system-ui,sans-serif;opacity:0;transition:opacity .6s';
+  document.body.appendChild(fade);document.body.appendChild(sk);
+  ['hud','hid'].forEach(function(i){$(i).classList.add('hidden')});$('toast').style.opacity=0;
+  $('vig').style.background='radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.8) 100%)';
+  cut={f:f,t:0,ph:0,fs:0,br:0,hb:0,rev:false,fin:false,fade:fade,sk:sk,done:done};
+  sk.addEventListener('click',function(){if(cut&&!cut.fin)cut.t=Math.max(cut.t,T3)});
+  requestAnimationFrame(function(){fade.style.opacity=0});
+  setTimeout(function(){sk.style.opacity=1},1800);
+}
+function cutStep(dt){
+  var c=cut,f=c.f,cm=f.cam,t;
+  c.t+=dt;t=c.t;
+  var vm=5.4,vn=t<T1?Math.min(1,t/1):Math.max(0,1-(t-T1)/.9);
+  var mm=Math.min(Math.max(t-T1,0),.9);
+  var z0=7.5+vm*(T1-.5)+vm*.45;
+  var z=t<T1?7.5+(t<1?vm*t*t/2:vm*(t-.5)):7.5+vm*(T1-.5)+vm*(mm-mm*mm/1.8);
+  var u=t-T2,sv=0;
+  if(u>0){sv=Math.min(1,u/6.5);sv=sv*sv*(3-2*sv);z=z0+(24-z0)*sv}
+  c.ph+=dt*10*vn;
+  if(vn>.3){
+    c.fs-=dt*vn;if(c.fs<=0){c.fs=.29;burst(.05,230,.6,'lowpass');if(Math.random()<.25)burst(.03,3200,.35,'highpass')}
+    c.br-=dt;if(c.br<=0){c.br=.55;burst(.22,900,.1,'bandpass')}
+  }
+  var k=Math.min(1,Math.max(0,(t-T1)/1.7)),e=k*k*(3-2*k);
+  var ya=Math.atan2(4.5,z-6)*sv,pv=Math.atan2(f.mid-1.55,z-6)*sv;
+  cm.position.set(Math.sin(c.ph*.5)*.12*vn,1.55+Math.abs(Math.sin(c.ph))*.1*vn,z);
+  if(u>0){cm.position.x+=(Math.random()-.5)*.012;cm.position.y+=(Math.random()-.5)*.012}
+  cm.rotation.set(Math.sin(c.ph)*.02*vn+.07*e+pv,Math.PI+Math.PI*e+Math.sin(c.ph*.5)*.03*vn-ya,Math.sin(c.ph*.5)*.02*vn);
+  /* сердце после остановки */
+  if(t>T1+1.7){c.hb-=dt;if(c.hb<=0){c.hb=u>0?.5:.8;burst(.09,60,.9,'lowpass');setTimeout(function(){burst(.07,55,.6,'lowpass')},140)}}
+  /* она появляется в окне */
+  if(u>=0&&!c.rev){c.rev=true;f.nan.visible=true;sting()}
+  var on=u>=0&&!(u>=.12&&u<.24);
+  f.lit.material.emissive.setHex(on?0x7a3a0c:0);f.lit.material.color.setHex(on?0xc8641a:0x050505);f.light.intensity=on?1.3:0;
+  if(u>=0){
+    var fv=74-52*sv;
+    if(cm.fov!==fv){cm.fov=fv;cm.updateProjectionMatrix()}
+    f.nan.rotation.y=Math.sin(t*.9)*.15;f.nan.position.z=5.5+Math.min(.3,u*.07);
+  }
+  if(t>=T3&&!c.fin){
+    c.fin=true;c.fade.style.opacity=1;c.sk.style.opacity=0;
+    setTimeout(function(){
+      if(c.fade.parentNode)c.fade.parentNode.removeChild(c.fade);
+      if(c.sk.parentNode)c.sk.parentNode.removeChild(c.sk);
+      cut=null;c.done();
+    },1400);
+  }
+  R.render(f.s,cm);
+}
+function escapeScene(lv){
+  var quiet=lv===3;mark(quiet?'quiet':'escape');
+  var btns=[['Сыграть ещё',function(){location.reload()}],['В главное меню',function(){location.href='index.html'}]];
+  function fin(){
+    if(quiet)ov('Конец: Тишина',"Ты ни разу не попался. Дверь открывается беззвучно, и лес принимает тебя. Ты бежишь, пока не решаешься обернуться. В окне горит свет, и няня Агата смотрит тебе вслед. Она улыбается и беззвучно шепчет: «Умница. Приходи ещё».",btns);
+    else ov('Конец: Побег',L("Ты вываливаешься из дома и бежишь в лес. Когда ты оборачиваешься, в окне стоит она и смотрит прямо на тебя пустыми белыми глазами.")+L(' Жизней осталось: ')+lv+L('. Хватило.'),btns);
+  }
+  try{startCut(fin)}catch(e){cut=null;fin()}
+}
+addEventListener('resize',function(){R.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();if(cut){cut.f.cam.aspect=innerWidth/innerHeight;cut.f.cam.updateProjectionMatrix()}});
+loop();
+
+ov('Нянька','Приют. Ночь. Дверь заперта. Няня Агата слепа, но слышит каждый звук.\n\nНайди три части ключа и выберись. В доме два этажа, лестница в холле. Часть ключа лежит в кабинете Агаты наверху, а ключ от кабинета ищи внизу. Левый палец: тяни стик слегка, чтобы красться, до упора, чтобы бежать (она услышит). Прячься в шкафах. Погремушкой можно отвлечь няню. Есть кровь и скримеры.',[['Войти',function(){aud();started=true;$('hud').classList.remove('hidden');hideOv();hudUp();say('Найди три части ключа. Не шуми.')}]]);
+})();
+</script>
+</body>
+</html>
