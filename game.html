@@ -88,16 +88,33 @@ button:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
 
 (function(){
 var $=function(i){return document.getElementById(i)};
-// Блокировка зума для iOS
-document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
-document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
-document.addEventListener('gestureend', function (e) { e.preventDefault(); });
+// ЖЕСТКАЯ БЛОКИРОВКА ЗУМА ДЛЯ SAFARI (iOS)
+// Блокируем щипок двумя пальцами
+document.addEventListener('touchmove', function (event) {
+  if (event.scale !== 1) { 
+    event.preventDefault(); 
+  }
+}, { passive: false });
 
-// Блокировка двойного тапа
+// Блокируем жест "щипок" Safari (gesturestart/change/end)
+['gesturestart', 'gesturechange', 'gestureend'].forEach(function(evt) {
+  document.addEventListener(evt, function(e) { 
+    e.preventDefault(); 
+  }, { passive: false });
+});
+
+// Блокируем двойной тап (даже если он быстрый)
+document.addEventListener('dblclick', function(e) {
+  e.preventDefault();
+}, { passive: false });
+
+// Старый добрый метод с touchend (на всякий случай)
 var lastTouchEnd = 0;
 document.addEventListener('touchend', function (event) {
   var now = (new Date()).getTime();
-  if (now - lastTouchEnd <= 300) { event.preventDefault(); }
+  if (now - lastTouchEnd <= 300) { 
+    event.preventDefault(); 
+  }
   lastTouchEnd = now;
 }, false);
 var cv=$('cv'),playing=false,started=false;
