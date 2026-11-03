@@ -186,31 +186,7 @@ var RL=[];
 [0,1].forEach(function(f){[[-6,0],[0,0],[6,0]].forEach(function(p,i){
   var b=i===1?.55:.4,l=new THREE.PointLight(0xaa7755,b,9,1.6);l.position.set(p[0],f*FH+2.5,p[1]);sc.add(l);
   RL.push({l:l,f:f,b:b,h:i===1});
-})});
-
-/* предметы */
-var ITEMS=[
- // Создаем список безопасных мест (где предметы не будут в стенах)
-var SAFE_SPOTS_F1 = [
-  {x:-7.6,z:-4.2}, {x:-8.2,z:5.2}, {x:7.2,z:-1.2}, {x:0,z:-5.3}, 
-  {x:7.3,z:3.5}, {x:-6,z:2}, {x:5,z:-3}, {x:-4,z:5.5}
-];
-var SAFE_SPOTS_F2 = [
-  {x:7,z:-1.2}, {x:7,z:3.6}, {x:-7,z:3.4}, {x:-7.7,z:-4.4}, 
-  {x:5.8,z:-4.8}, {x:-7.4,z:4.8}, {x:7.2,z:4.6}, {x:-1,z:4.5}
-];
-
-// Перемешиваем места, чтобы они всегда были разными
-function shuffle(a) { 
-  for (let i = a.length - 1; i > 0; i--) { 
-    const j = Math.floor(Math.random() * (i + 1)); 
-    [a[i], a[j]] = [a[j], a[i]]; 
-  } 
-  return a; 
-}
-
-var s1 = shuffle([...SAFE_SPOTS_F1]);
-var s2 = shuffle([...SAFE_SPOTS_F2]);
+})});  
 
 // Раскидываем предметы по случайным местам
 var ITEMS=[
@@ -320,6 +296,24 @@ function screamSnd(){
 }
 
 /* состояние */
+var SAFE_SPOTS_F1 = [
+  {x:-7.6,z:-4.2}, {x:-8.2,z:5.2}, {x:7.2,z:-1.2}, {x:0,z:-5.3}, 
+  {x:7.3,z:3.5}, {x:-6,z:2}, {x:5,z:-3}, {x:-4,z:5.5}
+];
+var SAFE_SPOTS_F2 = [
+  {x:7,z:-1.2}, {x:7,z:3.6}, {x:-7,z:3.4}, {x:-7.7,z:-4.4}, 
+  {x:5.8,z:-4.8}, {x:-7.4,z:4.8}, {x:7.2,z:4.6}, {x:-1,z:4.5}
+];
+function shuffle(a) { 
+  for (var i = a.length - 1; i > 0; i--) { 
+    var j = Math.floor(Math.random() * (i + 1)); 
+    var temp = a[i]; a[i] = a[j]; a[j] = temp; 
+  } 
+  return a; 
+}
+var s1 = shuffle([...SAFE_SPOTS_F1]);
+var s2 = shuffle([...SAFE_SPOTS_F2]);
+    
 var lives=3,keys=0,rat=0,hidden=-1,hasCab=false,pf=0,curF=0,tr=null;
 var pos={x:0,z:-4.6},yaw=Math.PI,pitch=0,mv={x:0,y:0},kb={},joyId=null,lookId=null,j0={x:0,y:0},lp={x:0,y:0},actK=null,mode=1,nzT=0,walkT=0;
 function hudUp(){
