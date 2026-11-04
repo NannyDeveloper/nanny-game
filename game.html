@@ -328,7 +328,15 @@ function screamSnd(){
 }
     
 var lives=3,keys=0,rat=0,hidden=-1,hasCab=false,pf=0,curF=0,tr=null,hasGun=false,vy=0,onGround=true;
-var pos={x:0,z:-4.6,y:0},yaw=Math.PI,pitch=0,mv={x:0,y:0},kb={},joyId=null,lookId=null,j0={x:0,y:0},lp={x:0,y:0},actK=null,mode=1,nzT=0,walkT=0;
+pos={x:0,z:-4.6,y:0};
+vy=0;
+onGround=true;
+yaw=Math.PI;
+pitch=0;
+hidden=-1;
+tr=null;
+pf=0;
+curF=0;
 function hudUp(){
   $('stat').textContent=L('Жизни: ')+lives+'  '+L('Ключ: ')+keys+'/3'+(hasCab?'  '+L('Каб.ключ'):'')+'  '+L('Погр.: ')+rat+'  '+L('Этаж: ')+(pf+1);
   $('thr').classList.toggle('hidden',rat<1||hidden>=0||!playing);
@@ -385,7 +393,9 @@ function doAct(){
       }
     }
     
-    pos = {x: bestX, z: bestZ};
+    pos = {x: bestX, z: bestZ, y: 0};
+vy = 0;
+onGround = true;
     hidden = -1;
     $('hid').classList.add('hidden');
     hudUp();
@@ -393,7 +403,7 @@ function doAct(){
   }
     if((kb[' '] || kb['space'] || window.jumpPressed) && onGround){ vy=5.0; onGround=false; window.jumpPressed=false; burst(.1, 300, .3, 'lowpass'); }
   var k=actK;if(!k)return;
-  if(k.t==='key'||k.t==='rat'||k.t==='cab'){
+  if(k.t==='key'||k.t==='rat'||k.t==='cab'||k.t==='gun'){
     sc.remove(k.m);ITEMS.splice(ITEMS.indexOf(k),1);burst(.1,900,.3,'bandpass');
     if(k.t==='key'){keys++;say(NOTES[k.n])}
 else if(k.t==='cab'){hasCab=true;say('Серебряный ключ. Похоже, он от кабинета Агаты наверху.')}
