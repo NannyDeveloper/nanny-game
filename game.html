@@ -344,10 +344,24 @@ function catchP(msg){
       hudUp();
       mark('caught');ov('Конец: Воспитанница','Няня Агата гладит тебя по голове. «Теперь ты наша», — шепчет она. В шкафу кто-то тихо стучит. Это уже не твой голос.',[['Начать заново',function(){location.reload()}],['В главное меню',function(){location.href='index.html'}]]);
     }else{
-      pos={x:0,z:-4.6};yaw=Math.PI;pitch=0;hidden=-1;tr=null;pf=0;curF=0;$('hid').classList.add('hidden');
+      pos={x:0,z:-4.6,y:0};
+      vy=0;
+      onGround=true;
+      yaw=Math.PI;
+      pitch=0;
+      hidden=-1;
+      tr=null;
+      pf=0;
+      curF=0;
+      $('hid').classList.add('hidden');
       N.x=6;N.z=3;N.f=0;N.path=[];N.st='pat';N.frz=3.5;N.w=0;N.stair=0;
-      caught=false;playing=started;hudUp();
+      caught=false;
+      playing=started;
+      hudUp();
+      cam.position.set(0, 1.55, -4.6);
+      cam.rotation.set(0, Math.PI, 0);
       say(L(msg||'Она нашла тебя.')+L(' Осталось жизней: ')+lives+L('. Ты снова в холле.'));
+    }
     }
   },1500);
 }
