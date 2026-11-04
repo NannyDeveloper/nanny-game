@@ -328,15 +328,7 @@ function screamSnd(){
 }
     
 var lives=3,keys=0,rat=0,hidden=-1,hasCab=false,pf=0,curF=0,tr=null,hasGun=false,vy=0,onGround=true;
-pos={x:0,z:-4.6,y:0};
-vy=0;
-onGround=true;
-yaw=Math.PI;
-pitch=0;
-hidden=-1;
-tr=null;
-pf=0;
-curF=0;
+var pos={x:0,z:-4.6,y:0},yaw=Math.PI,pitch=0,mv={x:0,y:0},kb={},joyId=null,lookId=null,j0={x:0,y:0},lp={x:0,y:0},actK=null,mode=1,nzT=0,walkT=0;
 function hudUp(){
   $('stat').textContent=L('Жизни: ')+lives+'  '+L('Ключ: ')+keys+'/3'+(hasCab?'  '+L('Каб.ключ'):'')+'  '+L('Погр.: ')+rat+'  '+L('Этаж: ')+(pf+1);
   $('thr').classList.toggle('hidden',rat<1||hidden>=0||!playing);
