@@ -364,8 +364,7 @@ function labelOf0(k){
 }
 function doAct(){
     if(!playing||tr)return;
-    if((kb[' '] || kb['space'] || window.jumpPressed) && onGround){ vy=5.0; onGround=false; window.jumpPressed=false; burst(.1, 300, .3, 'lowpass'); }
-  if(hidden>=0){
+    if(hidden>=0){
     var e=HIDES[hidden].e;
     var bestX = e[0], bestZ = e[1];
     
@@ -392,6 +391,7 @@ function doAct(){
     hudUp();
     return;
   }
+    if((kb[' '] || kb['space'] || window.jumpPressed) && onGround){ vy=5.0; onGround=false; window.jumpPressed=false; burst(.1, 300, .3, 'lowpass'); }
   var k=actK;if(!k)return;
   if(k.t==='key'||k.t==='rat'||k.t==='cab'){
     sc.remove(k.m);ITEMS.splice(ITEMS.indexOf(k),1);burst(.1,900,.3,'bandpass');
