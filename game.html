@@ -363,8 +363,8 @@ function labelOf0(k){
   return keys>=3?'Открыть дверь и выйти':'Дверь заперта ('+keys+'/3)';
 }
 function doAct(){
+    if(!playing||tr)return;
     if((kb[' '] || kb['space'] || window.jumpPressed) && onGround){ vy=5.0; onGround=false; window.jumpPressed=false; burst(.1, 300, .3, 'lowpass'); }
-  if(!playing||tr)return;
   if(hidden>=0){
     var e=HIDES[hidden].e;
     var bestX = e[0], bestZ = e[1];
