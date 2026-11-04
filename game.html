@@ -237,7 +237,14 @@ var ITEMS=[
 ];
 ITEMS.forEach(function(it){
   var c=it.t==='key'?[0xffd54a,0x806000]:it.t==='cab'?[0xcfd8dc,0x303a40]:it.t==='gun'?[0x333333,0x111111]:[0x6fb1ff,0x1a3a66];
-  it.m=B(.25,.25,.25,c[0],it.x,(it.t==='rat'?.3:.85)+it.f*FH,it.z,c[1]);
+  
+  if (it.t === 'gun') {
+    it.m = buildShotgun();
+    it.m.position.set(it.x, (it.t==='rat'?.3:.85)+it.f*FH, it.z);
+    sc.add(it.m);
+  } else {
+    it.m = B(.25,.25,.25,c[0],it.x,(it.t==='rat'?.3:.85)+it.f*FH,it.z,c[1]);
+  }
 });
 var NOTES=['Дневник: «Няня Агата ослепла в пожаре. Теперь она слышит всё. Не беги.»','Дневник: «Днём она добрая. Но ночью мы прячемся в шкафах и не дышим.»','Дневник: «Ключ разобрали на три части. Она думает, мы его не найдём.»'];
 var HIDES=[
@@ -246,6 +253,28 @@ var HIDES=[
 ];
 
 function part(geo,c,x,y,z,e){var m=new THREE.Mesh(geo,M(c,e));m.position.set(x,y,z);return m}
+
+function buildShotgun(){
+  var g = new THREE.Group();
+  var mat = new THREE.MeshLambertMaterial({color: 0x333333, emissive: 0x111111});
+  var wood = new THREE.MeshLambertMaterial({color: 0x5a3a22});
+  
+  var barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.6, 8), mat);
+  barrel.rotation.x = Math.PI / 2;
+  barrel.position.set(0, 0.05, 0.2);
+  g.add(barrel);
+  
+  var stock = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.3), wood);
+  stock.position.set(0, -0.05, -0.15);
+  g.add(stock);
+  
+  var pump = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.08, 0.15), wood);
+  pump.position.set(0, 0.02, 0.05);
+  g.add(pump);
+  
+  return g;
+}
+
 function buildNanny(){var g=new THREE.Group();
 
 g.add(part(new THREE.CylinderGeometry(.2,.65,1.4,10),0x151515,0,.7,0)); 
