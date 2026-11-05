@@ -398,6 +398,7 @@ function labelOf(k){var s=labelOf0(k);var m=/^(Дверь заперта) (\(.*\
 function labelOf0(k){
   if(k.t==='key')return 'Взять часть ключа';
   if(k.t==='cab')return 'Взять серебряный ключ';
+  if(k.t==='gun')return 'Взять дробовик';
   if(k.t==='rat')return 'Взять погремушку';
   if(k.t==='hide')return 'Спрятаться';
   if(k.t==='stairs')return pf===0?'Подняться по лестнице':'Спуститься по лестнице';
