@@ -63,6 +63,11 @@ button:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
 #ob{display:grid;gap:10px;width:min(100%,360px)}
 .btn{padding:14px 16px;border:2px solid var(--ink);border-radius:12px;background:transparent;color:var(--ink);font:600 16px system-ui,sans-serif}
 @media (orientation:landscape){#toast{bottom:calc(env(safe-area-inset-bottom,0px) + 100px)}}
+#act, #thr, #sht, #jmp, #joy {
+  pointer-events: auto !important;
+  z-index: 10;
+  touch-action: none;
+}
 </style>
 </head>
 <body>
@@ -463,8 +468,8 @@ else{rat++;say('Погремушка. Брось её, чтобы отвлечь
     escapeScene(lives);
   }
 }
-$('act').addEventListener('click',doAct);
-$('sht').addEventListener('click', function(){
+$('act').addEventListener('pointerdown',doAct);
+$('sht').addEventListener('pointerdown', function(){
   if(!hasGun || !playing) return;
   hasGun = false;
   $('sht').classList.add('hidden');
@@ -478,7 +483,7 @@ $('sht').addEventListener('click', function(){
     say('Ты выстрелил в пустоту.');
   }
 });
-$('thr').addEventListener('click',function(){
+$('thr').addEventListener('pointerdown',function(){
   if(!playing||rat<1||hidden>=0||tr)return;
   rat--;var tx=Math.max(-8.5,Math.min(8.5,pos.x-Math.sin(yaw)*5)),tz=Math.max(-5.5,Math.min(5.5,pos.z-Math.cos(yaw)*5));
   burst(.2,2200,.7,'bandpass');hear(tx,tz,16,pf);toast('Звякнуло вдали');hudUp();
