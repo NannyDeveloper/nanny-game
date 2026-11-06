@@ -132,7 +132,7 @@ function ov(t,p,btns){
   btns.forEach(function(x){var e=document.createElement('button');e.className='btn';e.textContent=L(x[0]);e.addEventListener('click',x[1]);b.appendChild(e)});
   $('ov').classList.remove('hidden');
 }
-function hideOv(){$('ov').classList.add('hidden');playing=started&&!caught;$('jmp').classList.remove('hidden');function hideOv(){
+function hideOv(){$('ov').classList.add('hidden');playing=started&&!caught;$('jmp').classList.remove('hidden');
   $('ov').classList.add('hidden');
   playing = started && !caught;
   $('jmp').classList.remove('hidden');
