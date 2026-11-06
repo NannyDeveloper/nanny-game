@@ -1,4 +1,5 @@
 window.NANNY_NEWS=[
+  {date:'06.11.26', ru: 'Версия 1.8! Добавление прицела и отображения дробовика во время использования.', en: 'Version 1.8! Added crosshair and weapon in hand.'},
   {date:'05.11.26', ru: 'Версия 1.7.1! Исправлены ошибки.', en: 'Version 1.7.1! Fixed bugs.'},
   {date:'04.11.26', ru: 'Версия 1.7! Добавление прыжков и дробовика. Исправлены ошибки.', en: 'Version 1.7! Added jumps and shotgun. Fixed bugs.'},
   {date:'03.11.26', ru: 'Версия 1.6! Добавление рандомизации предметов.', en: 'Version 1.6! Added Random Spawn.'},
