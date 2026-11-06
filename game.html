@@ -132,7 +132,12 @@ function ov(t,p,btns){
   btns.forEach(function(x){var e=document.createElement('button');e.className='btn';e.textContent=L(x[0]);e.addEventListener('click',x[1]);b.appendChild(e)});
   $('ov').classList.remove('hidden');
 }
-function hideOv(){$('ov').classList.add('hidden');playing=started&&!caught;$('jmp').classList.remove('hidden');}
+function hideOv(){$('ov').classList.add('hidden');playing=started&&!caught;$('jmp').classList.remove('hidden');function hideOv(){
+  $('ov').classList.add('hidden');
+  playing = started && !caught;
+  $('jmp').classList.remove('hidden');
+  $('crosshair').classList.remove('hidden');
+}
 function toast(t){var e=$('toast');e.textContent=L(t);e.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.opacity=0},1700)}
 function say(t){var e=$('msg');e.textContent=L(t);e.style.opacity=1;clearTimeout(say.t);say.t=setTimeout(function(){e.style.opacity=0},Math.max(4500,t.length*70))}
 
