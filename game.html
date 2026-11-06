@@ -63,6 +63,18 @@ button:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
 #ob{display:grid;gap:10px;width:min(100%,360px)}
 .btn{padding:14px 16px;border:2px solid var(--ink);border-radius:12px;background:transparent;color:var(--ink);font:600 16px system-ui,sans-serif}
 @media (orientation:landscape){#toast{bottom:calc(env(safe-area-inset-bottom,0px) + 100px)}}
+#crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 100;
+}
 </style>
 </head>
 <body>
@@ -74,6 +86,7 @@ button:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
 <div id="vig"></div>
 <div id="hid" class="hidden"></div>
 <div id="hud" class="hidden">
+    <div id="crosshair" class="hidden"></div>
    <button id="jmp" class="hidden" style="position:fixed; right:150px; bottom:calc(env(safe-area-inset-bottom,0px) + 45px); border:2px solid rgba(236,230,224,.4); border-radius:50%; background:rgba(10,8,8,.6); color:#ece6e0; width:60px; height:60px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:bold; user-select:none; pointer-events:auto; transition: background 0.1s;">↑</button>
   <button id="sht" class="hidden" style="position:fixed; right:16px; bottom:calc(env(safe-area-inset-bottom,0px) + 200px); border:2px solid #ffb347; border-radius:14px; background:rgba(10,8,8,.72); font-weight:600; font-size:15px; padding:8px 12px; color:#ece6e0; min-width:140px; min-height:50px;">Выстрел</button>
   <div id="stat"></div><div id="nz"></div><div id="msg"></div>
@@ -130,6 +143,11 @@ try{
 }catch(e){ov('Не запустилось','Браузер не поддерживает 3D (WebGL).',[]);return}
 sc=new THREE.Scene();sc.background=new THREE.Color(0x020203);sc.fog=new THREE.FogExp2(0x020203,.1);
 cam=new THREE.PerspectiveCamera(74,innerWidth/innerHeight,.1,30);cam.rotation.order='YXZ';sc.add(cam);
+var gunInHand = buildShotgun();
+gunInHand.scale.set(0.5, 0.5, 0.5);
+gunInHand.position.set(0.3, -0.3, -0.5);
+gunInHand.visible = false;
+cam.add(gunInHand);
 function M(c,e){return new THREE.MeshLambertMaterial({color:c,emissive:e||0})}
 function B(w,h,d,c,x,y,z,e){var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c,e));m.position.set(x,y,z);sc.add(m);return m}
 
@@ -442,7 +460,8 @@ onGround = true;
     sc.remove(k.m);ITEMS.splice(ITEMS.indexOf(k),1);burst(.1,900,.3,'bandpass');
     if(k.t==='key'){keys++;say(NOTES[k.n])}
 else if(k.t==='cab'){hasCab=true;say('Серебряный ключ. Похоже, он от кабинета Агаты наверху.')}
-else if(k.t==='gun'){hasGun=true;say('Дробовик. Если Няня подойдет близко, выстрели.'); $('sht').classList.remove('hidden');}
+else if(k.t==='gun'){hasGun=true;say('Дробовик. Если Няня подойдет близко, выстрели.'); $('sht').classList.remove('hidden');
+    gunInHand.visible = true;}
 else{rat++;say('Погремушка. Брось её, чтобы отвлечь няню.')}
     hudUp();
   }else if(k.t==='stairs'){
@@ -467,6 +486,7 @@ $('act').addEventListener('click',doAct);
 $('sht').addEventListener('click', function(){
   if(!hasGun || !playing) return;
   hasGun = false;
+gunInHand.visible = false;
   $('sht').classList.add('hidden');
   burst(.6, 120, 2, 'lowpass'); burst(.3, 1200, 1, 'bandpass');
   if(dist(N.x, N.z, pos.x, pos.z) < 12){
