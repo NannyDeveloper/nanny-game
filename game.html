@@ -121,12 +121,14 @@ document.addEventListener('touchend', function (event) {
   lastTouchEnd = now;
 }, false);
 var cv=$('cv'),playing=false,started=false;
+var desktop=window.matchMedia&&matchMedia('(pointer:fine)').matches;
 var LANG='ru';try{LANG=localStorage.getItem('nanny_lang')||(/^(ru|uk|be)/i.test(navigator.language||'')?'ru':'en')}catch(e){}
 var EN={"Пожалуйста, переверните устройство горизонтально!": "Please rotate your device to landscape!", "Нянька": "Nanny", "Войти": "Enter", "Пропустить": "Skip", "Не запустилось": "Failed to start", "Браузер не поддерживает 3D (WebGL).": "Your browser does not support 3D (WebGL).", "Дневник: «Няня Агата ослепла в пожаре. Теперь она слышит всё. Не беги.»": "Diary: “Nanny Agatha went blind in a fire. Now she hears everything. Don’t run.”", "Дневник: «Днём она добрая. Но ночью мы прячемся в шкафах и не дышим.»": "Diary: “By day she is kind. But at night we hide in wardrobes and hold our breath.”", "Дневник: «Ключ разобрали на три части. Она думает, мы его не найдём.»": "Diary: “The key was split into three parts. She thinks we will never find it.”", "Найди три части ключа. Не шуми.": "Find three key parts. Stay quiet.", "Погремушка. Брось её, чтобы отвлечь няню.": "A rattle. Throw it to distract the nanny.", "Серебряный ключ. Похоже, он от кабинета Агаты наверху.": "A silver key. It looks like it opens Agatha’s study upstairs.", "Замок поддался. Скрипнула дверь.": "The lock gives way. The door creaks.", "Заперто. Нужен ключ от кабинета": "Locked. You need the study key", "Нужно 3 части ключа": "You need all 3 key parts", "Звякнуло вдали": "A clink in the distance", "Не дыши": "Don’t breathe", "Она нашла тебя.": "She found you.", "Она открыла укрытие.": "She opened your hiding spot.", " Осталось жизней: ": " Lives left: ", ". Ты снова в холле.": ". You are back in the hall.", "Взять часть ключа": "Take key part", "Взять серебряный ключ": "Take silver key", "Взять погремушку": "Take rattle", "Спрятаться": "Hide", "Подняться по лестнице": "Go upstairs", "Спуститься по лестнице": "Go downstairs", "Открыть кабинет": "Unlock the study", "Кабинет заперт": "The study is locked", "Открыть дверь и выйти": "Open the door and leave", "Дверь заперта": "The door is locked", "Выйти из укрытия": "Leave hiding spot", "Жизни: ": "Lives: ", "Ключ: ": "Key: ", "Погремушки: ": "Rattles: ", "Погр.: ": "Rattles: ", "Этаж: ": "Floor: ", "Каб.ключ": "Study key", "Шум: ": "Noise: ", "ТИХО": "QUIET", "ШАГОМ": "WALK", "БЕГ": "RUN", "Бросить погремушку": "Throw rattle", "Начать заново": "Start over", "Сыграть ещё": "Play again", "В главное меню": "Main menu", "Конец: Воспитанница": "Ending: The Ward", "Няня Агата гладит тебя по голове. «Теперь ты наша», — шепчет она. В шкафу кто-то тихо стучит. Это уже не твой голос.": "Nanny Agatha strokes your head. “Now you are ours,” she whispers. Something knocks softly inside the wardrobe. It is no longer your voice.", "Конец: Тишина": "Ending: Silence", "Ты ни разу не попался. Дверь открывается беззвучно, и лес принимает тебя. Ты бежишь, пока не решаешься обернуться. В окне горит свет, и няня Агата смотрит тебе вслед. Она улыбается и беззвучно шепчет: «Умница. Приходи ещё».": "You were never caught. The door opens without a sound, and the forest takes you in. You run until you dare to look back. A light burns in the window, and Nanny Agatha watches you go. She smiles and silently whispers: “Good girl. Come again.”", "Конец: Побег": "Ending: Escape", "Ты вываливаешься из дома и бежишь в лес. Когда ты оборачиваешься, в окне стоит она и смотрит прямо на тебя пустыми белыми глазами.": "You tumble out of the house and run into the forest. When you turn around, she is standing in the window, staring straight at you with empty white eyes.", " Жизней осталось: ": " Lives left: ", ". Хватило.": ". That was enough.", "Приют. Ночь. Дверь заперта. Няня Агата слепа, но слышит каждый звук.\n\nНайди три части ключа и выберись. В доме два этажа, лестница в холле. Часть ключа лежит в кабинете Агаты наверху, а ключ от кабинета ищи внизу. Левый палец: тяни стик слегка, чтобы красться, до упора, чтобы бежать (она услышит). Прячься в шкафах. Погремушкой можно отвлечь няню. Есть кровь и скримеры.": "An orphanage. Night. The door is locked. Nanny Agatha is blind, but she hears every sound.\n\nFind three key parts and get out. The house has two floors, with a staircase in the hall. One key part lies in Agatha’s study upstairs, and the study key must be found downstairs. Left thumb: drag the stick slightly to sneak, all the way to run (she will hear you). Hide in wardrobes. Throw a rattle to distract her. Contains blood and jump scares."};
 function L(s){return LANG==='en'&&EN[s]!==undefined?EN[s]:s}
 function mark(k){try{var d=JSON.parse(localStorage.getItem('nanny_end')||'{}');d[k]=1;localStorage.setItem('nanny_end',JSON.stringify(d))}catch(e){}}
 (function(){var w=document.querySelector('.warning-text');if(w)w.textContent=L('Пожалуйста, переверните устройство горизонтально!');document.documentElement.lang=LANG;document.title=L('Нянька')})();
 function ov(t,p,btns){
+    if(document.exitPointerLock)document.exitPointerLock();
   playing=false;$('ot').textContent=L(t);$('op').textContent=L(p);
   var b=$('ob');b.innerHTML='';
   btns.forEach(function(x){var e=document.createElement('button');e.className='btn';e.textContent=L(x[0]);e.addEventListener('click',x[1]);b.appendChild(e)});
@@ -512,12 +514,14 @@ $('thr').addEventListener('click',function(){
 
 cv.addEventListener('contextmenu',function(e){e.preventDefault()});
 cv.addEventListener('pointerdown',function(e){
+  if(document.pointerLockElement===cv)return;
   if(!playing)return;
   if(e.pointerType==='touch'&&e.clientX<innerWidth*.45){joyId=e.pointerId;j0={x:e.clientX,y:e.clientY}}
   else{lookId=e.pointerId;lp={x:e.clientX,y:e.clientY}}
   try{cv.setPointerCapture(e.pointerId)}catch(x){}
 });
 cv.addEventListener('pointermove',function(e){
+    if(document.pointerLockElement===cv)return;
   if(e.pointerId===joyId){
     var dx=(e.clientX-j0.x)/45,dy=(e.clientY-j0.y)/45,l=Math.sqrt(dx*dx+dy*dy);
     if(l>1){dx/=l;dy/=l}
@@ -532,8 +536,20 @@ function up(e){
   if(e.pointerId===lookId)lookId=null;
 }
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
-addEventListener('keydown',function(e){var k=e.key.toLowerCase();kb[k]=true;if(k==='e'||k===' ')doAct()});
+addEventListener('keydown',function(e){var k=e.key.toLowerCase();kb[k]=true;if(k==='e'||k===' ')doAct();if(k==='q')$('thr').click()});
 addEventListener('keyup',function(e){kb[e.key.toLowerCase()]=false});
+cv.addEventListener('click',function(){
+  if(!desktop||!playing)return;
+  if(document.pointerLockElement!==cv){try{cv.requestPointerLock()}catch(e){}}
+  else if(hasGun)$('sht').click();
+});
+document.addEventListener('mousemove',function(e){
+  if(document.pointerLockElement!==cv||!playing)return;
+  var dx=Math.max(-100,Math.min(100,e.movementX)),dy=Math.max(-100,Math.min(100,e.movementY));
+  yaw-=dx*.0022;
+  pitch=Math.max(-1.1,Math.min(1.1,pitch-dy*.0022));
+});
+
 function hit(x,z){var C=COL[pf];for(var i=0;i<C.length;i++){var b=C[i];if(x>b[0]&&x<b[1]&&z>b[2]&&z<b[3])return true}return false}
 var MODES=['ТИХО','ШАГОМ','БЕГ'],MC=['#7ad07a','#ffd54a','#ff5a4a'],SPD=[1.1,2,3.2],RAD=[1.5,4.5,9];
 function move(dt){
@@ -698,6 +714,7 @@ function buildForest(FL){
   return {s:s,cam:cam2,nan:nan,lit:lit,light:ll,mid:mid};
 }
 function startCut(done){
+     if(document.exitPointerLock)document.exitPointerLock();
   var f=buildForest(2);
   var fade=document.createElement('div');fade.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;background:#000;opacity:1;transition:opacity 1.2s;z-index:50;pointer-events:none';
   var sk=document.createElement('button');sk.textContent=L('Пропустить');
@@ -763,7 +780,7 @@ addEventListener('resize',function(){R.setSize(innerWidth,innerHeight);cam.aspec
 loop();
 $('jmp').addEventListener('pointerdown', function(e){ e.preventDefault(); window.jumpPressed = true; doAct(); });
 
-ov('Нянька','Приют. Ночь. Дверь заперта. Няня Агата слепа, но слышит каждый звук.\n\nНайди три части ключа и выберись. В доме два этажа, лестница в холле. Часть ключа лежит в кабинете Агаты наверху, а ключ от кабинета ищи внизу. Левый палец: тяни стик слегка, чтобы красться, до упора, чтобы бежать (она услышит). Прячься в шкафах. Погремушкой можно отвлечь няню. Есть кровь и скримеры.',[['Войти',function(){aud();started=true;$('hud').classList.remove('hidden');hideOv();hudUp();say('Найди три части ключа. Не шуми.')}]]);
+ov('Нянька','Приют. Ночь. Дверь заперта. Няня Агата слепа, но слышит каждый звук.\n\nНайди три части ключа и выберись. В доме два этажа, лестница в холле. Часть ключа лежит в кабинете Агаты наверху, а ключ от кабинета ищи внизу. Левый палец: тяни стик слегка, чтобы красться, до упора, чтобы бежать (она услышит). Прячься в шкафах. Погремушкой можно отвлечь няню. Есть кровь и скримеры.',[['Войти',function(){aud();if(desktop)cv.requestPointerLock();started=true;started=true;$('hud').classList.remove('hidden');hideOv();hudUp();say('Найди три части ключа. Не шуми.')}]]);
 })();
 </script>
 </body>
